@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF Writeups | Muhammad Junaid Akhtar</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&family=Share+Tech+Mono&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-darker: #050505;
+            --red: #ff7a18;
+            --red-glow: rgba(255, 122, 24, 0.5);
+            --text: #e0e0e0;
+            --text-dim: #808080;
+            --border: rgba(255, 122, 24, 0.25);
+        }
+
+        body {
+            font-family: 'Fira Code', monospace;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--border);
+            z-index: 999;
+            padding: 1.2rem 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--red);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+        }
+
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--red);
+            text-shadow: 0 0 10px var(--red-glow);
+        }
+
+        .section-header {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 2rem;
+            color: var(--red);
+            margin: 7rem 2rem 3rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-header::before {
+            content: '$ ';
+            color: var(--text-dim);
+        }
+
+        .section-header::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(to right, var(--red), transparent);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem 5rem;
+        }
+
+        .card {
+            background: rgba(15, 15, 15, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--red);
+            box-shadow: 0 0 20px var(--red-glow);
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--red);
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .card-meta {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-content {
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .read-more {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--red);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .read-more:hover {
+            text-shadow: 0 0 10px var(--red-glow);
+        }
+
+        footer {
+            background: var(--bg-darker);
+            border-top: 2px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-container">
+        <div class="logo">junaid</div>
+        <ul>
+            <li><a href="index.html">home</a></li>
+            <li><a href="writeups.html">ctf writeups</a></li>
+            <li><a href="index.html#contact">contact</a></li>
+        </ul>
+    </div>
+</nav>
+
+<h2 class="section-header">CTF Writeups</h2>
+
+<div class="grid" id="posts"></div>
+
+<footer>
+    &copy; 2026 Muhammad Junaid Akhtar · Built with HTML & CSS
+</footer>
+
+<script>
+const container = document.getElementById("posts");
+const feedUrl = "https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@JunaidAce";
+
+fetch(feedUrl)
+.then(res => res.json())
+.then(data => {
+    data.items.forEach(post => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const title = document.createElement("div");
+        title.className = "card-title";
+        title.textContent = post.title;
+
+        const date = document.createElement("div");
+        date.className = "card-meta";
+        date.textContent = new Date(post.pubDate).toDateString();
+
+        // Strip ALL HTML (no images guaranteed)
+        const temp = document.createElement("div");
+        temp.innerHTML = post.description;
+        const textOnly = temp.textContent || "";
+
+        const content = document.createElement("div");
+        content.className = "card-content";
+        content.textContent = textOnly.substring(0, 220) + "...";
+
+        const link = document.createElement("a");
+        link.href = post.link;
+        link.target = "_blank";
+        link.className = "read-more";
+        link.textContent = "Read full writeup →";
+
+        card.append(title, date, content, link);
+        container.appendChild(card);
+    });
+})
+.catch(() => {
+    container.innerHTML = "<p style='color: var(--red)'>Failed to load writeups.</p>";
+});
+</script>
+
+</body>
+</html>

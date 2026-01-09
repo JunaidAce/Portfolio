@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muhammad Junaid Akhtar | Penetration Tester</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&family=Share+Tech+Mono&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-darker: #050505;
+            --red: #ff7a18;
+            --red-glow: rgba(255, 122, 24, 0.5);
+            --text: #e0e0e0;
+            --text-dim: #808080;
+            --border: rgba(255, 122, 24, 0.25);
+        }
+        
+        /* Custom Cursor */
+        body {
+            cursor: none;
+        }
+        
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--red);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+            transform: translate(-50%, -50%);
+        }
+        
+        .cursor-follower {
+            width: 8px;
+            height: 8px;
+            background: var(--red);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.15s ease;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px var(--red-glow);
+        }
+        
+        body { 
+            font-family: 'Fira Code', monospace; 
+            background: var(--bg-dark); 
+            color: var(--text); 
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        
+        .glitch {
+            position: relative;
+            animation: glitch 0.3s infinite;
+        }
+
+        .card {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.4;
+        }
+        
+        .nav-right a {
+            display: flex;
+            align-items: center;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--border);
+            z-index: 999;
+            padding: 1.2rem 0;
+        }
+        
+        .social-icon {
+            width: 18px;
+            height: 18px;
+            fill: var(--text);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .social-icon:hover {
+            fill: var(--red);
+            filter: drop-shadow(0 0 6px var(--red-glow));
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .logo {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--red);
+            text-shadow: 0 0 10px var(--red-glow);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo::before { content: 'root@'; color: var(--text-dim); }
+        .logo::after { content: ':~$ _'; animation: blink 1s infinite; }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+        }
+        
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        nav a::before {
+            content: '>';
+            position: absolute;
+            left: -15px;
+            opacity: 0;
+            color: var(--red);
+            transition: all 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--red);
+            text-shadow: 0 0 10px var(--red-glow);
+        }
+        
+        nav a:hover::before {
+            left: -20px;
+            opacity: 1;
+        }
+        
+        .terminal-hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 2rem;
+            background: 
+                radial-gradient(ellipse at top, rgba(255, 122, 24, 0.1), transparent),
+                radial-gradient(ellipse at bottom, rgba(255, 122, 24, 0.05), transparent);
+        }
+        
+        .terminal-window {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(15, 15, 15, 0.9);
+            border: 2px solid var(--red);
+            border-radius: 8px;
+            box-shadow: 
+                0 0 30px var(--red-glow),
+                inset 0 0 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+        
+        .terminal-header {
+            background: rgba(255, 122, 24, 0.1);
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--red);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .terminal-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .terminal-btn.close { background: #ff5f56; }
+        .terminal-btn.minimize { background: #ffbd2e; }
+        .terminal-btn.maximize { background: #27c93f; }
+        
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+        
+        .terminal-body {
+            padding: 2.5rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .terminal-line {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .prompt {
+            color: var(--red);
+            margin-right: 0.5rem;
+        }
+        
+        .terminal-output {
+            color: var(--text);
+        }
+        
+        .hero-name {
+            font-size: 2.5rem;
+            color: var(--red);
+            text-shadow: 0 0 20px var(--red-glow);
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+        
+        .hero-role {
+            font-size: 1.2rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+        
+        section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+        }
+        
+        .section-header {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 2rem;
+            color: var(--red);
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .section-header::before {
+            content: '$ ';
+            color: var(--text-dim);
+        }
+        
+        .section-header::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(to right, var(--red), transparent);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        
+        .card {
+            background: rgba(15, 15, 15, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: block;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--red), transparent);
+            transition: all 0.5s;
+        }
+        
+        .card:hover::before {
+            left: 100%;
+        }
+        
+        .card:hover {
+    border-color: var(--red);
+    box-shadow: 0 0 50px 5px var(--red-glow); /* stronger, more vibrant glow */
+    transform: translateY(-5px);
+    transition: all 0.4s ease-in-out; /* smoother hover effect */
+}
+
+        
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--red);
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        
+        .card-meta {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card-content {
+            color: var(--text);
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+        
+        .card-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .card-content li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-content li::before {
+            content: '▹';
+            position: absolute;
+            left: 0;
+            color: var(--red);
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .tag {
+            background: rgba(255, 122, 24, 0.1);
+            border: 1px solid var(--border);
+            padding: 0.3rem 0.8rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            color: var(--red);
+            transition: all 0.3s;
+        }
+        
+        .tag:hover {
+            background: rgba(255, 122, 24, 0.2);
+            box-shadow: 0 0 10px var(--red-glow);
+        }
+        
+        .skills-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .skill-category {
+            background: rgba(15, 15, 15, 0.6);
+            border-left: 3px solid var(--red);
+            padding: 1.5rem;
+        }
+        
+        .skill-category h3 {
+            color: var(--red);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .skill-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        .skill-bar {
+            width: 60%;
+            height: 4px;
+            background: rgba(255, 122, 24, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .skill-progress {
+            height: 100%;
+            background: var(--red);
+            box-shadow: 0 0 10px var(--red-glow);
+            animation: load 2s ease-out;
+        }
+        
+        @keyframes load {
+            from { width: 0; }
+        }
+        
+        .contact-terminal {
+            background: rgba(15, 15, 15, 0.9);
+            border: 2px solid var(--red);
+            border-radius: 4px;
+            padding: 2rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .contact-line {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .contact-line a {
+            color: var(--red);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .contact-line a:hover {
+            text-shadow: 0 0 10px var(--red-glow);
+        }
+        
+        footer {
+            background: var(--bg-darker);
+            border-top: 2px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        
+        footer a {
+            color: var(--red);
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            .cursor, .cursor-follower { display: none; }
+            body { cursor: auto; }
+            nav ul { gap: 1.5rem; font-size: 0.85rem; }
+            .hero-name { font-size: 2rem; }
+            .section-header { font-size: 1.5rem; }
+            .terminal-body { padding: 1.5rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+#certifications .grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 1024px) {
+    #certifications .grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <nav>
+        <div class="nav-container">
+            <div class="logo">junaid</div>
+            <div class="nav-right">
+                <ul>
+                    <li><a href="#home">home</a></li>
+                    <li><a href="#about">about</a></li>
+                    <li><a href="#contact">contact</a></li>
+                    <li><a href="writeups.html">ctf writeups</a></li>
+                </ul>
+                <a href="https://www.linkedin.com/in/muhammad-junaid-akhtar-48b3b7341/" target="_blank">
+                    <svg class="social-icon" viewBox="0 0 24 24">
+                        <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 24h5V7H0v17zM7.5 7H12v2.3h.1c.6-1.1 2.1-2.3 4.3-2.3 4.6 0 5.5 3 5.5 6.9V24h-5v-7.6c0-1.8 0-4.2-2.6-4.2s-3 2-3 4v7.8h-5V7z"/>
+                    </svg>
+                </a>
+                <a href="https://github.com/JunaidAce" target="_blank">
+                    <svg class="social-icon" viewBox="0 0 24 24">
+                        <path d="M12 .5C5.7.5.5 5.8.5 12.2c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2.2c-3.2.7-3.9-1.6-3.9-1.6-.5-1.3-1.2-1.7-1.2-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 .1.6 2.1 2.6 2.7.2-.8.4-1.3.8-1.6-2.5-.3-5.1-1.3-5.1-5.7 0-1.3.5-2.3 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2.9-.3 1.9-.4 2.9-.4s2 .1 2.9.4c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.1.8.9 1.2 1.9 1.2 3.2 0 4.4-2.6 5.4-5.1 5.7.4.4.8 1.1.8 2.3v3.4c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.8 18.3.5 12 .5z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="terminal-hero">
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <span class="terminal-btn close"></span>
+                <span class="terminal-btn minimize"></span>
+                <span class="terminal-btn maximize"></span>
+                <span class="terminal-title">junaid@penetration-tester: ~</span>
+            </div>
+            <div class="terminal-body">
+                <div class="terminal-line">
+                    <span class="prompt">$</span>
+                    <span class="terminal-output">whoami</span>
+                </div>
+                <div class="hero-name">MUHAMMAD JUNAID AKHTAR</div>
+                <div class="hero-role">> Penetration Tester | Web Security Researcher</div>
+                <div class="terminal-line" style="margin-top: 2rem;">
+                    <span class="prompt">$</span>
+                    <span class="terminal-output">./view_portfolio.sh --all</span>
+                </div>
+                <div style="margin-top: 1rem; color: var(--text-dim);">
+                    [*] Loading portfolio data...<br>
+                    [+] Open to penetration testing & red team roles<br>
+                    [+] Strong focus on Web Security & CTFs<br>
+                    [+] Actively improving offensive security skills
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about">
+        <h2 class="section-header">cat about.md</h2>
+        <div class="card" style="max-width: 100%;">
+            <div class="card-content">
+                <p style="margin-bottom: 1rem;">
+                    Junior Penetration Tester with hands-on experience in <strong style="color: var(--red);">web and network security</strong>, 
+                    penetration testing labs, and CTF challenges. Currently pursuing Bachelor of Science at Riphah International University, Islamabad.
+                </p>
+                <p style="margin-bottom: 1rem;">
+                    Skilled in identifying and exploiting <strong style="color: var(--red);">OWASP Top 10 vulnerabilities</strong> with proven expertise 
+                    in red team operations, vulnerability assessments, and forensic investigations. Practical experience includes conducting attack simulations, 
+                    deploying honeypot systems, and performing ethical hacking on real-world applications.
+                </p>
+                <p style="margin-bottom: 1rem;">
+                    Ranked in the <strong style="color: var(--red);">Top 3% globally on TryHackMe</strong> with 50+ completed labs and learning paths. 
+                    Multiple-time CTF champion with <strong style="color: var(--red);">1st place</strong> at Riphah University CTF 2025 and 
+                    <strong style="color: var(--red);">2nd place</strong> at Islamia University of Bahawalpur CTF.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="experience">
+        <h2 class="section-header">ls -la /experience/</h2>
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">Cybersecurity Intern</div>
+                <div class="card-meta">Digital Empowerment Network | Jun 2025 - Aug 2025</div>
+                <div class="card-content">
+                    <ul>
+                        <li>Conducted red team exercises and attack simulations</li>
+                        <li>Performed vulnerability assessments and documentation</li>
+                        <li>Solved forensic cases using Autopsy and Wireshark</li>
+                        <li>Designed and deployed honeypot systems</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Web Pentester (Self-Directed)</div>
+                <div class="card-meta">Remote | Dec 2024 - Feb 2025</div>
+                <div class="card-content">
+                    <ul>
+                        <li>Ethical hacking on demo web applications and labs</li>
+                        <li>OWASP Top 10 exploitation via Juice Shop</li>
+                        <li>Professional penetration testing reports</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Education & Training</div>
+                <div class="card-meta">September 2024 - Present</div>
+                <div class="card-content">
+                    <ul>
+                        <li><strong>Hackviser</strong> - Top 1%, 40+ Warmups, Scenarios completed</li>
+                        <li><strong>TryHackMe</strong> - Top 3%, 50+ labs completed</li>
+                        <li>Active CTF participation and daily challenges</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills">
+        <h2 class="section-header">cat /etc/skills.conf</h2>
+        <div class="skills-matrix">
+            <div class="skill-category">
+                <h3>[ WEB PENTESTING ]</h3>
+                <div class="skill-item">
+                    <span>XSS, SQLi</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 90%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span>LFI / RFI</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span>Auth & Authz Bypass</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 80%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span>IDOR</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span>JWT Attacks</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 75%"></div></div>
+                </div>
+            </div>
+            
+            <div class="skill-category">
+                <h3>[ RED TEAM ]</h3>
+                <div class="skill-item">
+                    <span>Linux Priv Escalation</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 80%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span>AD Enumeration</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 70%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span>Attack Chaining</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 75%"></div></div>
+                </div>
+            </div>
+            
+            <div class="skill-category">
+                <h3>[ SECURITY TOOLS ]</h3>
+                <div class="skill-item">
+                    <span>Burp Suite</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 90%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span>Nmap</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span>BloodHound</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 70%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span>SQLmap</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 80%"></div></div>
+                </div>
+            </div>
+                        
+            <div class="skill-category">
+                <h3>[ SECURITY ANALYSIS ]</h3>
+                <div class="skill-item">
+                    <span>Vuln Assessment</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span>CTF & Lab Exploitation</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 90%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span>Web Red Team</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 80%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span>Penetration Testing</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <section id="projects">
+        <h2 class="section-header">git log --projects</h2>
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">Honeypot Development</div>
+                <div class="card-content">
+                    Designed and deployed honeypot system to detect and analyze unauthorized access attempts with real-time threat intelligence.
+                </div>
+                <div class="tags">
+                    <span class="tag">Network Security</span>
+                    <span class="tag">Threat Detection</span>
+                    <span class="tag">Linux</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">URL Blacklisting System</div>
+                <div class="card-content">
+                    C++ system using Binary Search Tree for fast malicious URL lookup and history tracking.
+                </div>
+                <div class="tags">
+                    <span class="tag">C++</span>
+                    <span class="tag">Data Structures</span>
+                    <span class="tag">Security</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">Brute-Force Detection</div>
+                <div class="card-content">
+                    Python web system to detect repeated failed login attempts and mitigate brute-force attacks.
+                </div>
+                <div class="tags">
+                    <span class="tag">Python</span>
+                    <span class="tag">Web Security</span>
+                    <span class="tag">Authentication</span>
+                </div>
+            </div>
+         
+            <div class="card" style="max-width: 100%;">
+                <a href="https://github.com/JunaidAce" target="_blank" style="color: var(--red); text-decoration: none; font-family: 'Share Tech Mono', monospace;">
+                    [+] View all projects on GitHub →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="certifications">
+        <h2 class="section-header">ls -la certs</h2>
+        <div class="grid">
+            <a href="CRTA-WEB.pdf" target="_blank" class="card">
+                <div class="card-title">Certified Web Red Team Analyst</div>
+                <div class="card-meta">CyberWarfare Labs · Feb 2026</div>
+                <div class="card-meta">Click to See Certificate</div>
+            </a>
+
+            <a href="CAPT.pdf" target="_blank" class="card">
+                <div class="card-title">Certified Associate Penetration Tester</div>
+                <div class="card-meta">Hackviser · Oct 2025</div>
+                <div class="card-meta">Click to See Certificate</div>
+            </a>
+
+            <a href="CC.pdf" target="_blank" class="card">
+                <div class="card-title">Certified in Cybersecurity</div>
+                <div class="card-meta">ISC2 · Jul 2025</div>
+                <div class="card-meta">Click to See Certificate</div>
+            </a>
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2 class="section-header">cat contact.md</h2>
+        <div class="contact-terminal">
+            <div class="contact-line">
+                <span class="prompt">$</span>
+                <span class="terminal-output">Email: <a href="mailto:junaidfps@gmail.com">junaidfps@gmail.com</a></span>
+            </div>
+            <div class="contact-line">
+                <span class="prompt">$</span>
+                <span class="terminal-output">Phone: <a href="tel:+923445347461">0344 5347461</a></span>
+            </div>
+            <div class="contact-line">
+                <span class="prompt">$</span>
+                <span class="terminal-output">LinkedIn: <a href="https://www.linkedin.com/in/muhammad-junaid-akhtar-48b3b7341/" target="_blank">linkedin.com/in/muhammad-junaid-akhtar</a></span>
+            </div>
+            <div class="contact-line">
+                <span class="prompt">$</span>
+                <span class="terminal-output">GitHub: <a href="https://github.com/JunaidAce" target="_blank">github.com/JunaidAce</a></span>
+            </div>
+        </div>
+    </section>
+
+
+    <footer>
+        &copy; 2026 Muhammad Junaid Akhtar. All rights reserved. <br>
+        Built using HTML & CSS. <a href="#home">Back to top</a>
+    </footer>
+
+
+       <!-- Cursor & Snake JS -->
+    <script>
+        const cursor = document.querySelector('.cursor');
+        const follower = document.querySelector('.cursor-follower');
+
+        let mouseX = 0, mouseY = 0;
+        let followX = 0, followY = 0;
+
+        document.addEventListener('mousemove', e => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+        });
+
+        function animateFollower() {
+            followX += (mouseX - followX) * 0.12;
+            followY += (mouseY - followY) * 0.12;
+
+            follower.style.left = followX + 'px';
+            follower.style.top = followY + 'px';
+
+            requestAnimationFrame(animateFollower);
+        }
+
+        animateFollower();
+    </script>
+</body>
+</html>
